@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 150" role="img" aria-labelledby="revealLogoTitle">
+  <title id="revealLogoTitle">Reveal Window Cleaning</title>
+  <path d="M60 8 C42 44 16 76 16 103 a44 44 0 1 0 88 0 C104 76 78 44 60 8 Z"
+        fill="none" stroke="#9BC4E4" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"/>
+  <path d="M88 98 a27 27 0 1 1 -27 -27 a15.5 15.5 0 1 1 -15.5 15.5"
+        fill="none" stroke="#174878" stroke-width="10" stroke-linecap="round"/>
+</svg>
