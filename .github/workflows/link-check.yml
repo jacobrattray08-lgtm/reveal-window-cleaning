@@ -1,0 +1,40 @@
+# Checks every internal and external link on the site and fails if any
+# are dead. Needs no secrets/API keys — safe to run on every push and PR.
+#
+# Catches things like: a typo'd href, a page that got renamed/removed,
+# or an external link (e.g. the Squeegee portal) that's gone offline.
+
+name: Link check
+
+permissions:
+  contents: read
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+  schedule:
+    # Weekly, to catch external links that rot over time even when
+    # nothing in this repo has changed.
+    - cron: "0 6 * * 1"
+  workflow_dispatch: {}
+
+jobs:
+  lychee:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Check links
+        uses: lycheeverse/lychee-action@v2
+        with:
+          args: >-
+            --no-progress
+            --max-retries 3
+            --timeout 20
+            --user-agent "Mozilla/5.0 (compatible; lychee-link-checker)"
+            --exclude "^tel:"
+            --exclude "^https://fonts\.(googleapis|gstatic)\.com/?$"
+            './**/*.html'
+          fail: true
