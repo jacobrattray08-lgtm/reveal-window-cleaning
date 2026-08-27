@@ -32,7 +32,6 @@ jobs:
             --timeout 20
             --user-agent "Mozilla/5.0 (compatible; lychee-link-checker)"
             --exclude "^tel:"
-            --exclude-mail
             --exclude "^https://fonts\.(googleapis|gstatic)\.com/?$"
             './**/*.html'
           fail: true
