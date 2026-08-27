@@ -51,6 +51,14 @@ const CONSERVATORY_UPLIFT = {
   large: { label: "Large — wraparound or orangery", pct: 0.25 },
 };
 
+// Internal reference only — VELUX/roof-window add-on, quoted the same way
+// as flat rooflights and roof lanterns: in person, on the day, never through
+// the online calculator. This isn't a customer-facing figure and must not
+// be shown, labelled, or referenced anywhere in the site's visible copy —
+// it's here purely so staff price it consistently: house price × pct,
+// rounded, added to whatever's agreed on the day.
+const VELUX_UPLIFT_PCT = 0.10;
+
 const FREQUENCIES = [
   { key: "w4", label: "Every 4 weeks", tag: " — most popular", note: "Our most requested cycle" },
   { key: "w8", label: "Every 8 weeks", tag: "", note: "" },

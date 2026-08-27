@@ -259,18 +259,60 @@ nav.primary .dropdown ul li a .icon-tile.sm{background:var(--glass)}
   .hero-content{padding-bottom:64px}
 }
 
-/* logo animation: a slow spinning swirl inside a gently floating droplet */
+/* logo animation: a water splash on load that resolves into the mark,
+   which then settles into a gentle float with a slow spinning swirl. */
+.hero-art .splash{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;pointer-events:none;z-index:1}
+.hero-art .ripple{
+  position:absolute;border:2px solid rgba(255,255,255,.6);border-radius:50%;
+  width:14px;height:14px;opacity:0;
+}
+.hero-art .splash-drop{
+  position:absolute;width:9px;height:9px;border-radius:50%;
+  background:#fff;opacity:0;
+}
 @media (prefers-reduced-motion: no-preference){
-  .hero-art .panel{animation:panel-in .9s cubic-bezier(.16,1,.3,1) both}
-  .hero-art svg{animation:hero-float 5.5s ease-in-out .4s infinite}
+  .hero-art .panel{animation:panel-in .7s cubic-bezier(.16,1,.3,1) both}
+  .hero-art .ripple{animation:ripple-out 1s cubic-bezier(.16,.84,.44,1) both}
+  .hero-art .r1{animation-delay:.35s}
+  .hero-art .r2{animation-delay:.48s}
+  .hero-art .r3{animation-delay:.62s}
+  .hero-art .splash-drop{animation:drop-burst .75s cubic-bezier(.16,.84,.44,1) both}
+  .hero-art .sd1{--tx:-68px;--ty:-38px;animation-delay:.34s}
+  .hero-art .sd2{--tx:60px;--ty:-52px;animation-delay:.38s}
+  .hero-art .sd3{--tx:-82px;--ty:22px;animation-delay:.3s}
+  .hero-art .sd4{--tx:78px;--ty:18px;animation-delay:.4s}
+  .hero-art .sd5{--tx:-28px;--ty:-76px;animation-delay:.44s}
+  .hero-art .sd6{--tx:34px;--ty:72px;animation-delay:.36s}
+  .hero-art svg{
+    animation:
+      logo-form .65s .5s cubic-bezier(.34,1.56,.64,1) both,
+      hero-float 5.5s ease-in-out 1.3s infinite;
+  }
   .hero-art .swirl-spin{
     transform-box:fill-box;transform-origin:50% 50%;
-    animation:swirl-rotate 15s linear infinite;
+    animation:swirl-rotate 15s linear 1.3s infinite;
   }
-  .hero-art .float-card.f1{animation:badge-in .6s .7s cubic-bezier(.16,1,.3,1) both}
-  .hero-art .float-card.f2{animation:badge-in .6s .9s cubic-bezier(.16,1,.3,1) both}
+  .hero-art .float-card.f1{animation:badge-in .6s 1.1s cubic-bezier(.16,1,.3,1) both}
+  .hero-art .float-card.f2{animation:badge-in .6s 1.3s cubic-bezier(.16,1,.3,1) both}
+}
+@media (prefers-reduced-motion: reduce){
+  .hero-art .splash{display:none}
 }
 @keyframes panel-in{from{opacity:0;transform:scale(.93) translateY(14px)}to{opacity:1;transform:scale(1) translateY(0)}}
+@keyframes ripple-out{
+  0%{width:8px;height:8px;opacity:.85;border-width:3px}
+  100%{width:230px;height:230px;opacity:0;border-width:1px}
+}
+@keyframes drop-burst{
+  0%{transform:translate(0,0) scale(1);opacity:.95}
+  100%{transform:translate(var(--tx),var(--ty)) scale(.15);opacity:0}
+}
+@keyframes logo-form{
+  0%{opacity:0;transform:scale(.1);filter:blur(3px)}
+  55%{opacity:1;transform:scale(1.14);filter:blur(0)}
+  80%{transform:scale(.96)}
+  100%{opacity:1;transform:scale(1)}
+}
 @keyframes hero-float{0%,100%{transform:translateY(0)}50%{transform:translateY(-9px)}}
 @keyframes swirl-rotate{to{transform:rotate(360deg)}}
 @keyframes badge-in{from{opacity:0;transform:translateY(8px) scale(.9)}to{opacity:1;transform:translateY(0) scale(1)}}
