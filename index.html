@@ -77,6 +77,7 @@
           <div><b>No contract</b><span>Cancel any time, by phone or email</span></div>
           <div><b>Fully insured</b><span>Public liability cover — ask for the certificate</span></div>
           <div><b>Direct Debit or cash</b><span>Handled securely through Squeegee &amp; GoCardless</span></div>
+          <div><b>Text reminders</b><span>We'll message you before every visit so you know we're coming</span></div>
         </div>
       </div>
       <div class="hero-art" aria-hidden="true">
@@ -219,7 +220,7 @@
               <fieldset>
                 <legend class="fld" style="margin-bottom:10px" id="payLegend">How would you like to pay?</legend>
                 <div class="radio-list" role="radiogroup" aria-labelledby="payLegend">
-                  <div class="radio-row"><label><input type="radio" id="payDirectDebit" name="payment" value="direct-debit"><span class="txt"><b>Direct Debit</b><small style="color:var(--ink-soft);display:block">Set up securely through Squeegee &amp; GoCardless after booking</small></span></label></div>
+                  <div class="radio-row"><label><input type="radio" id="payDirectDebit" name="payment" value="direct-debit"><span class="txt"><b>Direct Debit</b><small style="color:var(--ink-soft);display:block">Set up securely through Squeegee &amp; GoCardless after booking — it takes about 5 working days for your mandate to activate, so your first clean or two may be cash while that goes through</small></span></label></div>
                   <div class="radio-row"><label><input type="radio" id="payCash" name="payment" value="cash"><span class="txt"><b>Cash on the day</b></span></label></div>
                 </div>
               </fieldset>
@@ -407,6 +408,7 @@
 </footer>
 
 <script>document.getElementById('year').textContent = new Date().getFullYear();</script>
+<script src="js/site-config.js"></script>
 <script src="js/pricing-data.js"></script>
 <script src="js/calculator.js"></script>
 </body>
