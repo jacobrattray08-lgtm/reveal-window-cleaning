@@ -1,6 +1,6 @@
 /* ============================================================
    Reveal Window Cleaning — quote calculator
-   Depends on pricing-data.js being loaded first.
+   Depends on pricing-data.js and site-config.js being loaded first.
    ============================================================ */
 (function () {
   "use strict";
@@ -108,12 +108,56 @@
       notifyResult.classList.add("show", "err");
       return;
     }
-    // No backend wired up yet — replace with a real submission
-    // (Formspree / Netlify Forms / a Squeegee webhook) before launch.
-    notifyResult.textContent =
-      "Thank you — we'll email you as soon as we cover your area.";
-    notifyResult.classList.add("show", "yes");
-    notifyEmail.value = "";
+    const endpoint =
+      typeof REVEAL_CONFIG !== "undefined" ? REVEAL_CONFIG.notifyFormEndpoint : "";
+
+    if (!endpoint) {
+      // Not configured yet (see js/site-config.js) — never claim we've
+      // saved the email when we haven't gone anywhere with it.
+      // eslint-disable-next-line no-console
+      console.warn(
+        "Reveal Window Cleaning — notifyFormEndpoint is not set in js/site-config.js. " +
+          "This email was NOT saved anywhere:",
+        email
+      );
+      notifyResult.textContent =
+        "Sorry, that's not switched on yet — please email Revealwindowcleaning@hotmail.com and we'll add you to the list.";
+      notifyResult.classList.add("show", "err");
+      return;
+    }
+
+    notifyBtn.disabled = true;
+    const notifyBtnDefaultText = notifyBtn.textContent;
+    notifyBtn.textContent = "Sending…";
+
+    fetch(endpoint, {
+      method: "POST",
+      headers: { "Content-Type": "application/json", Accept: "application/json" },
+      body: JSON.stringify({
+        email: email,
+        postcode: state.postcodeInput,
+        outward: state.outward,
+        _form: "out-of-area-notify",
+      }),
+    })
+      .then((res) => {
+        if (!res.ok) throw new Error("Submission failed with status " + res.status);
+        notifyResult.textContent =
+          "Thank you — we'll email you as soon as we cover your area.";
+        notifyResult.classList.add("show", "yes");
+        notifyEmail.value = "";
+      })
+      .catch((err) => {
+        // eslint-disable-next-line no-console
+        console.error("Reveal Window Cleaning — notify-me signup failed to send:", err);
+        notifyResult.textContent =
+          "Sorry, that didn't send — please email Revealwindowcleaning@hotmail.com instead.";
+        notifyResult.classList.add("show", "err");
+      })
+      .finally(() => {
+        notifyBtn.disabled = false;
+        notifyBtn.textContent = notifyBtnDefaultText;
+      });
   });
 
   // ---------- Step 2: bedrooms ----------
@@ -311,10 +355,13 @@
 
       errorSummary.hidden = true;
 
-      // No backend wired up yet. Before launch: point this at the
-      // confirmed Squeegee automatic-lead webhook (see build spec §6),
-      // and also email a copy of the payload below to the business
-      // inbox as a safety net.
+      // Squeegee has no public inbound API/webhook to create a customer or
+      // appointment automatically (only a hosted Customer Portal on their
+      // Advanced plan+, whose embed/pre-population behaviour isn't publicly
+      // documented — confirm with Squeegee support before building toward
+      // that). So this booking is emailed to the business inbox via the
+      // form backend configured in site-config.js, and gets keyed into
+      // Squeegee by hand (or a CSV import) rather than created automatically.
       const payload = {
         zone: state.zone,
         postcode: state.postcodeInput,
@@ -330,12 +377,67 @@
         fourteenDayConsent: true,
         consentTimestamp: new Date().toISOString(),
       };
-      // eslint-disable-next-line no-console
-      console.log("Reveal Window Cleaning — booking submitted (demo only):", payload);
 
-      bookingForm.hidden = true;
-      confirmPanel.hidden = false;
-      confirmPanel.scrollIntoView({ behavior: "smooth", block: "start" });
+      const endpoint =
+        typeof REVEAL_CONFIG !== "undefined" ? REVEAL_CONFIG.bookingFormEndpoint : "";
+      const submitBtn = bookingForm.querySelector('button[type="submit"]');
+      const submitBtnDefaultText = submitBtn ? submitBtn.textContent : "";
+
+      function showBookingError(msg) {
+        errorSummary.innerHTML = "";
+        const list = document.createElement("ul");
+        const li = document.createElement("li");
+        li.textContent = msg;
+        list.appendChild(li);
+        errorSummary.appendChild(list);
+        errorSummary.hidden = false;
+        errorSummary.focus();
+      }
+
+      if (!endpoint) {
+        // Not configured yet — never show "thank you" when nothing was
+        // actually sent anywhere.
+        // eslint-disable-next-line no-console
+        console.warn(
+          "Reveal Window Cleaning — bookingFormEndpoint is not set in js/site-config.js. " +
+            "This booking was NOT sent anywhere:",
+          payload
+        );
+        showBookingError(
+          "Sorry, online booking isn't switched on yet — please call 07727 864273 or email Revealwindowcleaning@hotmail.com with your details and we'll get you booked in."
+        );
+        return;
+      }
+
+      if (submitBtn) {
+        submitBtn.disabled = true;
+        submitBtn.textContent = "Sending…";
+      }
+
+      fetch(endpoint, {
+        method: "POST",
+        headers: { "Content-Type": "application/json", Accept: "application/json" },
+        body: JSON.stringify(payload),
+      })
+        .then((res) => {
+          if (!res.ok) throw new Error("Submission failed with status " + res.status);
+          bookingForm.hidden = true;
+          confirmPanel.hidden = false;
+          confirmPanel.scrollIntoView({ behavior: "smooth", block: "start" });
+        })
+        .catch((err) => {
+          // eslint-disable-next-line no-console
+          console.error("Reveal Window Cleaning — booking failed to send:", err, payload);
+          showBookingError(
+            "Sorry, that didn't send — please call 07727 864273 or email Revealwindowcleaning@hotmail.com instead so we don't lose your booking."
+          );
+        })
+        .finally(() => {
+          if (submitBtn) {
+            submitBtn.disabled = false;
+            submitBtn.textContent = submitBtnDefaultText;
+          }
+        });
     });
   }
 })();
